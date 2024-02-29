@@ -69,6 +69,13 @@ const SpreadsheetDialog = ({
     formState: { errors },
   } = useForm({
     resolver: zodResolver(dialogFormSchema),
+    defaultValues: {
+      title: "",
+      x: "",
+      y: "",
+      z: "",
+      colorBy: "",
+    },
   });
 
   useEffect(() => {
@@ -96,9 +103,11 @@ const SpreadsheetDialog = ({
                 <Controller
                   name="title"
                   control={control}
-                  render={({ field }) => (
-                    <input {...field} placeholder="Enter graph title" />
-                  )}
+                  render={({ field }) => {
+                    console.log(field);
+                    field.ref = null;
+                    return <Input {...field} />;
+                  }}
                 />
                 {/* Check if the error message is defined before rendering */}
                 {/* {errors.title?.message && (
@@ -112,33 +121,40 @@ const SpreadsheetDialog = ({
                     <Controller
                       name={axis}
                       control={control}
-                      render={({ field }) => (
-                        <>
-                          <Select {...field} onValueChange={field.onChange}>
-                            <SelectTrigger>
-                              <SelectValue
-                                placeholder={`Select ${axis.toUpperCase()} axis`}
-                              />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectGroup>
-                                <SelectLabel>Columns</SelectLabel>
-                                {columnNames.map((name, index) => (
-                                  <SelectItem key={index} value={name}>
-                                    {name}
-                                  </SelectItem>
-                                ))}
-                              </SelectGroup>
-                            </SelectContent>
-                          </Select>
-                          {/* Display the error message if there's an error for this field */}
-                          {/* {errors[axis] && (
-                            <p className="text-red-600">
-                              {errors[axis]?.message}
-                            </p>
-                          )} */}
-                        </>
-                      )}
+                      render={({ field }) => {
+                        field.ref = null;
+                        return (
+                          <>
+                            <Select {...field} onValueChange={field.onChange}>
+                              <SelectTrigger>
+                                <SelectValue
+                                  placeholder={`Select ${axis.toUpperCase()} axis`}
+                                />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectGroup>
+                                  <SelectLabel>Columns</SelectLabel>
+                                  {columnNames.map((name, index) => (
+                                    <SelectItem key={index} value={name}>
+                                      {name}
+                                    </SelectItem>
+                                  ))}
+                                </SelectGroup>
+                              </SelectContent>
+                            </Select>
+                            {/* Display the error message if there's an error for this field */}
+                            {errors[axis] && (
+                              <p className="text-red-600">
+                                {errors[axis]?.message && (
+                                  <p className="text-red-600">
+                                    {errors[axis]?.message as string}
+                                  </p>
+                                )}{" "}
+                              </p>
+                            )}
+                          </>
+                        );
+                      }}
                     />
                   </div>
                 ))}
@@ -147,23 +163,26 @@ const SpreadsheetDialog = ({
               <Controller
                 name="colorBy"
                 control={control}
-                render={({ field }) => (
-                  <Select {...field} onValueChange={field.onChange}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select column to color by" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        <SelectLabel>Columns</SelectLabel>
-                        {columnNames.map((name, index) => (
-                          <SelectItem key={index} value={name}>
-                            {name}
-                          </SelectItem>
-                        ))}
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
-                )}
+                render={({ field }) => {
+                  field.ref = null;
+                  return (
+                    <Select {...field} onValueChange={field.onChange}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select column to color by" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
+                          <SelectLabel>Columns</SelectLabel>
+                          {columnNames.map((name, index) => (
+                            <SelectItem key={index} value={name}>
+                              {name}
+                            </SelectItem>
+                          ))}
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                  );
+                }}
               />
 
               <Button type="submit">Submit</Button>
