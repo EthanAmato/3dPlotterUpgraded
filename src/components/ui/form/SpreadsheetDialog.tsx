@@ -1,38 +1,4 @@
 "use client";
-import {
-  Dispatch,
-  SetStateAction,
-  useState,
-  useEffect,
-  FormEvent,
-} from "react";
-import { z } from "zod";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import { Button } from "../button";
-
-type SpreadsheetDialogProps = {
-  file: File;
-  isOpen: boolean;
-  setIsOpen: Dispatch<SetStateAction<boolean>>;
-};
-
-type Axes = {
-  x: string;
-  y: string;
-  z: string;
-};
-type Axis = keyof Axes;
-
 // Import necessary hooks and components
 import readXlsxFile from "read-excel-file";
 import {
@@ -45,8 +11,33 @@ import {
   SelectValue,
 } from "../select";
 import { Input } from "../input";
-import { Controller, Form, useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Dispatch, SetStateAction, useState, useEffect } from "react";
+import { z } from "zod";
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { Button } from "../button";
+
+type SpreadsheetDialogProps = {
+  file: File;
+  isOpen: boolean;
+  setIsOpen: Dispatch<SetStateAction<boolean>>;
+  setFileMetadata: Dispatch<SetStateAction<DialogFormSchema | null>>;
+};
+
+type Axes = {
+  x: string;
+  y: string;
+  z: string;
+};
+type Axis = keyof Axes;
 
 const dialogFormSchema = z.object({
   title: z.string().min(1, "Graph title is required"),
@@ -56,10 +47,13 @@ const dialogFormSchema = z.object({
   colorBy: z.string().optional(), // Make 'color by' optional
 });
 
+export type DialogFormSchema = z.infer<typeof dialogFormSchema>;
+
 const SpreadsheetDialog = ({
   file,
   isOpen,
   setIsOpen,
+  setFileMetadata,
 }: SpreadsheetDialogProps) => {
   const [columnNames, setColumnNames] = useState<string[]>([]);
 
@@ -85,8 +79,9 @@ const SpreadsheetDialog = ({
     });
   }, [file]);
 
-  const onSubmit = (data: any) => {
+  const onSubmit = (data: DialogFormSchema) => {
     console.log(data);
+    setFileMetadata(data);
     setIsOpen(false);
     // Handle the submission logic here
   };
@@ -109,12 +104,7 @@ const SpreadsheetDialog = ({
                     return <Input {...field} />;
                   }}
                 />
-                {/* Check if the error message is defined before rendering */}
-                {/* {errors.title?.message && (
-                  <p className="text-red-600">{errors.title.message}</p>
-                )} */}
               </div>
-
               <div>
                 {(["x", "y", "z"] as const).map((axis) => (
                   <div key={axis}>

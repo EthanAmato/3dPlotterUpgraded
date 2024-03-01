@@ -17,7 +17,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 
-import SpreadsheetDialog from "./SpreadsheetDialog";
+import SpreadsheetDialog, { DialogFormSchema } from "./SpreadsheetDialog";
 
 const ACCEPTED_IMAGE_TYPES = [
   "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
@@ -33,6 +33,7 @@ const formSchema = z.object({
 export function SpreadSheetForm() {
   const [isFormSubmitted, setIsFormSubmitted] = useState<boolean>(false);
   const [spreadsheetFile, setSpreadsheetFile] = useState<File | null>(null);
+  const [fileMetadata, setFileMetadata] = useState<DialogFormSchema | null>(null);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -81,6 +82,7 @@ export function SpreadSheetForm() {
           file={spreadsheetFile!}
           isOpen={isFormSubmitted}
           setIsOpen={setIsFormSubmitted}
+          setFileMetadata={setFileMetadata!}
         />
       )}
     </>
