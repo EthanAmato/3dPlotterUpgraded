@@ -44,6 +44,8 @@ const dialogFormSchema = z.object({
   x: z.string().min(1, "X axis selection is required"),
   y: z.string().min(1, "Y axis selection is required"),
   z: z.string().min(1, "Z axis selection is required"),
+  pointNames: z.string().min(1, "Point Names Required"),
+  pointDescriptions: z.string().optional(),
   colorBy: z.string().optional(), // Make 'color by' optional
 });
 
@@ -69,6 +71,8 @@ const SpreadsheetDialog = ({
       y: "",
       z: "",
       colorBy: "",
+      pointNames: "",
+      pointDescriptions: "",
     },
   });
 
@@ -101,7 +105,7 @@ const SpreadsheetDialog = ({
                   render={({ field }) => {
                     console.log(field);
                     field.ref = null;
-                    return <Input {...field} />;
+                    return <Input placeholder="Graph Title" {...field} />;
                   }}
                 />
               </div>
@@ -151,6 +155,63 @@ const SpreadsheetDialog = ({
               </div>
 
               <Controller
+                name="pointNames"
+                control={control}
+                render={({ field }) => {
+                  field.ref = null;
+                  return (
+                    <Select {...field} onValueChange={field.onChange}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select column to name by" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
+                          <SelectLabel>Columns</SelectLabel>
+                          {columnNames.map((name, index) => (
+                            <SelectItem key={index} value={name}>
+                              {name}
+                            </SelectItem>
+                          ))}
+                        </SelectGroup>
+                      </SelectContent>
+                      {errors && (
+                        <p className="text-red-600">
+                          {errors?.pointNames?.message && (
+                            <p className="text-red-600">
+                              {errors?.pointNames.message as string}
+                            </p>
+                          )} 
+                        </p>
+                      )}
+                    </Select>
+                  );
+                }}
+              />
+              <Controller
+                name="pointDescriptions"
+                control={control}
+                render={({ field }) => {
+                  field.ref = null;
+                  return (
+                    <Select {...field} onValueChange={field.onChange}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Optionally select a column for descriptions" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
+                          <SelectLabel>Columns</SelectLabel>
+                          {columnNames.map((name, index) => (
+                            <SelectItem key={index} value={name}>
+                              {name}
+                            </SelectItem>
+                          ))}
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                  );
+                }}
+              />
+              <Controller
                 name="colorBy"
                 control={control}
                 render={({ field }) => {
@@ -158,7 +219,7 @@ const SpreadsheetDialog = ({
                   return (
                     <Select {...field} onValueChange={field.onChange}>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select column to color by" />
+                        <SelectValue placeholder="Optionally select column to color by" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectGroup>

@@ -15,9 +15,10 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import SpreadsheetDialog, { DialogFormSchema } from "./SpreadsheetDialog";
+import Render3dPlot from "@/components/Render3dPlot";
 
 const ACCEPTED_IMAGE_TYPES = [
   "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
@@ -33,7 +34,9 @@ const formSchema = z.object({
 export function SpreadSheetForm() {
   const [isFormSubmitted, setIsFormSubmitted] = useState<boolean>(false);
   const [spreadsheetFile, setSpreadsheetFile] = useState<File | null>(null);
-  const [fileMetadata, setFileMetadata] = useState<DialogFormSchema | null>(null);
+  const [fileMetadata, setFileMetadata] = useState<DialogFormSchema | null>(
+    null
+  );
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -43,6 +46,10 @@ export function SpreadSheetForm() {
     setIsFormSubmitted(true);
     setSpreadsheetFile(value.file);
   }
+
+  useEffect(() => {
+    console.log(fileMetadata);
+  }, [fileMetadata]);
 
   return (
     <>
@@ -85,6 +92,12 @@ export function SpreadSheetForm() {
           setFileMetadata={setFileMetadata!}
         />
       )}
+
+      {
+        fileMetadata && spreadsheetFile && (
+          <Render3dPlot fileMetadata={fileMetadata} spreadsheet={spreadsheetFile}/>
+        )
+      }
     </>
   );
 }
