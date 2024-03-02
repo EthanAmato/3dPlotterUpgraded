@@ -3,6 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { File } from "@web-std/file";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -65,6 +66,7 @@ export function SpreadSheetForm() {
                   {/* Manually handle the onChange event */}
                   <Input
                     type="file"
+                    accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                     onChange={(e) => {
                       const files = e.target.files;
                       const file = files && files[0] ? files[0] : null;
@@ -93,11 +95,12 @@ export function SpreadSheetForm() {
         />
       )}
 
-      {
-        fileMetadata && spreadsheetFile && (
-          <Render3dPlot fileMetadata={fileMetadata} spreadsheet={spreadsheetFile}/>
-        )
-      }
+      {fileMetadata && spreadsheetFile && (
+        <Render3dPlot
+          fileMetadata={fileMetadata}
+          spreadsheet={spreadsheetFile}
+        />
+      )}
     </>
   );
 }

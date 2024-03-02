@@ -14,6 +14,7 @@
     "@radix-ui/react-label": "^2.0.2",
     "@radix-ui/react-select": "^2.0.0",
     "@radix-ui/react-slot": "^1.0.2",
+    "@web-std/file": "^3.0.3",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
     "lucide-react": "^0.341.0",
@@ -27,6 +28,7 @@
     "read-excel-file": "^5.7.1",
     "tailwind-merge": "^2.2.1",
     "tailwindcss-animate": "^1.0.7",
+    "web-file-polyfill": "github:web-std/file",
     "zod": "^3.22.4"
   },
   "devDependencies": {

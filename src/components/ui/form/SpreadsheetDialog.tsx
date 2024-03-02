@@ -13,7 +13,13 @@ import {
 import { Input } from "../input";
 import { Controller, FieldPath, FieldValues, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Dispatch, SetStateAction, useState, useEffect, RefCallback } from "react";
+import {
+  Dispatch,
+  SetStateAction,
+  useState,
+  useEffect,
+  RefCallback,
+} from "react";
 import { z } from "zod";
 import {
   AlertDialog,
@@ -40,7 +46,6 @@ type Axes = {
 };
 type Axis = keyof Axes;
 
- 
 const dialogFormSchema = z.object({
   title: z.string().min(1, "Graph title is required"),
   x: z.string().min(1, "X axis selection is required"),
@@ -90,10 +95,10 @@ const SpreadsheetDialog = ({
   }, [file]);
 
   const onSubmit = (data: DialogFormSchema) => {
+    console.log("Submitting");
     console.log(data);
     setFileMetadata(data);
     setIsOpen(false);
-    // Handle the submission logic here
   };
   return (
     <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
@@ -117,7 +122,7 @@ const SpreadsheetDialog = ({
                       <>
                         <Label htmlFor="title">Title</Label>
                         <Input
-                          id="width"
+                          id="title"
                           placeholder="Graph Title"
                           {...field}
                         />
@@ -134,12 +139,21 @@ const SpreadsheetDialog = ({
                     control={control}
                     render={({ field }) => {
                       // field.ref = null;
+                      console.log(field);
                       return (
                         <>
                           <Input
                             id="width"
-                            placeholder="Graph Title"
+                            type="number"
+                            placeholder="Width"
                             {...field}
+                            onChange={(e) =>
+                              field.onChange(
+                                e.target.value === ""
+                                  ? ""
+                                  : Number(e.target.value)
+                              )
+                            } // Convert the input value to a number
                           />
                         </>
                       );
@@ -158,8 +172,16 @@ const SpreadsheetDialog = ({
                       return (
                         <Input
                           id="height"
-                          placeholder="Graph Title"
+                          type="number"
+                          placeholder="Height"
                           {...field}
+                          onChange={(e) =>
+                            field.onChange(
+                              e.target.value === ""
+                                ? ""
+                                : Number(e.target.value)
+                            )
+                          } // Convert the input value to a number
                         />
                       );
                     }}
