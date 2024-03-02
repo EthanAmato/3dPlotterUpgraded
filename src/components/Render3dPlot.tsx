@@ -5,6 +5,7 @@ const Plot = dynamic(() => import("react-plotly.js"), { ssr: false });
 import { DialogFormSchema } from "./ui/form/SpreadsheetDialog"; // Import your DialogFormSchema type
 import { getColorMap, parseSpreadsheet } from "@/lib/utils";
 import PlotDownloader from "./PlotDownloader";
+import { Layout, SceneAxis } from "plotly.js";
 
 export default function Render3dPlot({
   fileMetadata,
@@ -50,11 +51,16 @@ export default function Render3dPlot({
     });
   }, [spreadsheet, fileMetadata]);
 
-  const layout = {
+  const layout: Partial<Layout> = {
     title: fileMetadata.title,
     autosize: true,
     width: fileMetadata.width,
     height: fileMetadata.height,
+    scene: {
+      xaxis: { title: fileMetadata.x },
+      yaxis: { title: fileMetadata.y },
+      zaxis: { title: fileMetadata.z },
+    },
   };
 
   return (

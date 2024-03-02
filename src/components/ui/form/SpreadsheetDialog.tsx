@@ -11,9 +11,9 @@ import {
   SelectValue,
 } from "../select";
 import { Input } from "../input";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, FieldPath, FieldValues, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Dispatch, SetStateAction, useState, useEffect } from "react";
+import { Dispatch, SetStateAction, useState, useEffect, RefCallback } from "react";
 import { z } from "zod";
 import {
   AlertDialog,
@@ -40,6 +40,7 @@ type Axes = {
 };
 type Axis = keyof Axes;
 
+ 
 const dialogFormSchema = z.object({
   title: z.string().min(1, "Graph title is required"),
   x: z.string().min(1, "X axis selection is required"),
@@ -102,14 +103,16 @@ const SpreadsheetDialog = ({
         </AlertDialogHeader>
         <AlertDialogDescription asChild>
           <>
-            <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+            <form
+              onSubmit={handleSubmit(onSubmit)}
+              className="flex flex-col gap-4"
+            >
               <div>
                 <Controller
                   name="title"
                   control={control}
                   render={({ field }) => {
-                    console.log(field);
-                    field.ref = null;
+                    // field.ref = null;
                     return (
                       <>
                         <Label htmlFor="title">Title</Label>
@@ -130,7 +133,7 @@ const SpreadsheetDialog = ({
                     name="width"
                     control={control}
                     render={({ field }) => {
-                      field.ref = null;
+                      // field.ref = null;
                       return (
                         <>
                           <Input
@@ -151,7 +154,7 @@ const SpreadsheetDialog = ({
                     control={control}
                     render={({ field }) => {
                       console.log(field);
-                      field.ref = null;
+                      // field.ref = null;
                       return (
                         <Input
                           id="height"
@@ -172,7 +175,7 @@ const SpreadsheetDialog = ({
                       name={axis}
                       control={control}
                       render={({ field }) => {
-                        field.ref = null;
+                        // field.ref = null;
                         return (
                           <>
                             <Select {...field} onValueChange={field.onChange}>
@@ -215,7 +218,7 @@ const SpreadsheetDialog = ({
                   name="pointNames"
                   control={control}
                   render={({ field }) => {
-                    field.ref = null;
+                    // field.ref = null;
                     return (
                       <Select {...field} onValueChange={field.onChange}>
                         <SelectTrigger>
@@ -251,7 +254,7 @@ const SpreadsheetDialog = ({
                   name="pointDescriptions"
                   control={control}
                   render={({ field }) => {
-                    field.ref = null;
+                    // field.ref = null;
                     return (
                       <Select {...field} onValueChange={field.onChange}>
                         <SelectTrigger>
@@ -279,7 +282,7 @@ const SpreadsheetDialog = ({
                   name="colorBy"
                   control={control}
                   render={({ field }) => {
-                    field.ref = null;
+                    // field.ref = null;
                     return (
                       <Select {...field} onValueChange={field.onChange}>
                         <SelectTrigger>
