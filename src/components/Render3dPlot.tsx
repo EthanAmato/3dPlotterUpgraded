@@ -6,6 +6,10 @@ import { DialogFormSchema } from "./ui/form/SpreadsheetDialog"; // Import your D
 import { getColorMap, parseSpreadsheet } from "@/lib/utils";
 import PlotDownloader from "./PlotDownloader";
 import { Layout, SceneAxis } from "plotly.js";
+import { Data } from "plotly.js";
+interface SpreadsheetRow {
+  [key: string]: string | number | boolean | null; // Adjust based on your actual data structure
+}
 
 export default function Render3dPlot({
   fileMetadata,
@@ -18,36 +22,66 @@ export default function Render3dPlot({
   let colorMap: Record<string, string> = {};
   useEffect(() => {
     parseSpreadsheet(spreadsheet).then((data) => {
+      const updatedPlotData: Partial<Data>[] = [];
+
+      // Define a function to format hover text
+      const formatHoverText = (row: SpreadsheetRow) => {
+        const xText = `${fileMetadata.x}: ${row[fileMetadata.x]}`;
+        const yText = `${fileMetadata.y}: ${row[fileMetadata.y]}`;
+        const zText = `${fileMetadata.z}: ${row[fileMetadata.z]}`;
+        const nameText = `Name: ${row[fileMetadata.pointNames]}`;
+        const descriptionText = fileMetadata.pointDescriptions
+          ? `Description: ${String(row[fileMetadata.pointDescriptions ?? ""])}`
+          : "";
+
+        // Combine the text pieces, filtering out any empty strings
+        return [xText, yText, zText, nameText, descriptionText]
+          .filter((text) => text)
+          .join("<br>");
+      };
+
       if (fileMetadata.colorBy) {
         colorMap = getColorMap(data, fileMetadata.colorBy);
+        const groupedData = data.reduce((acc, row) => {
+          const key = row[fileMetadata.colorBy ?? ""] ?? "Unknown";
+          if (!acc[key]) acc[key] = [];
+          acc[key].push(row);
+          return acc;
+        }, {});
+
+        Object.entries(groupedData).forEach(([key, group]) => {
+          const trace: Partial<Data> = {
+            x: group.map((row: SpreadsheetRow) => row[fileMetadata.x]),
+            y: group.map((row: SpreadsheetRow) => row[fileMetadata.y]),
+            z: group.map((row: SpreadsheetRow) => row[fileMetadata.z]),
+            mode: "markers",
+            type: "scatter3d",
+            name: key,
+            marker: {
+              size: 12,
+              opacity: 1,
+              color: colorMap[key],
+            },
+            hovertext: group.map((row: SpreadsheetRow) => formatHoverText(row)),
+            hoverinfo: 'text' // Specify to use only custom hover text
+          };
+          updatedPlotData.push(trace);
+        });
+      } else {
+        const trace: Partial<Data> = {
+          x: data.map((row) => row[fileMetadata.x]),
+          y: data.map((row) => row[fileMetadata.y]),
+          z: data.map((row) => row[fileMetadata.z]),
+          mode: "markers",
+          type: "scatter3d",
+          marker: { size: 12, opacity: 1, color: "Greens" },
+          hovertext: data.map((row) => formatHoverText(row)),
+          hoverinfo: 'text' // Specify to use only custom hover text
+        };
+        updatedPlotData.push(trace);
       }
-      const trace: Partial<Plotly.Data> = {
-        x: data.map((row) => row[fileMetadata.x]),
-        y: data.map((row) => row[fileMetadata.y]),
-        z: data.map((row) => row[fileMetadata.z]),
 
-        mode: "text+markers",
-        type: "scatter3d",
-        marker: {
-          size: 12,
-          opacity: 1,
-          // Conditionally apply color if fileMetadata.colorBy is defined
-          ...(fileMetadata.colorBy
-            ? {
-                color: data.map(
-                  (row) => colorMap[row[fileMetadata.colorBy ?? ""]]
-                ),
-              }
-            : { color: "Greens" }),
-        },
-        text: data.map((row) => row[fileMetadata.pointNames]), // Use pointNames as hover text
-        hovertext: fileMetadata.pointDescriptions
-          ? data.map((row) => row[fileMetadata.pointDescriptions ?? ""] ?? "") // Safely access the descriptions
-          : data.map((row) => row[fileMetadata.pointNames]),
-
-        textinfo: "text+value",
-      };
-      setPlotData([trace]);
+      setPlotData(updatedPlotData);
     });
   }, [spreadsheet, fileMetadata]);
 
@@ -60,6 +94,10 @@ export default function Render3dPlot({
       xaxis: { title: fileMetadata.x },
       yaxis: { title: fileMetadata.y },
       zaxis: { title: fileMetadata.z },
+    },
+    legend: {
+      title: { text: fileMetadata.colorBy },
+      orientation: "v",
     },
   };
 
