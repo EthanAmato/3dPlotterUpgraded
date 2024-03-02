@@ -95,8 +95,6 @@ const SpreadsheetDialog = ({
   }, [file]);
 
   const onSubmit = (data: DialogFormSchema) => {
-    console.log("Submitting");
-    console.log(data);
     setFileMetadata(data);
     setIsOpen(false);
   };
