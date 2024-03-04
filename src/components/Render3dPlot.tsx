@@ -57,7 +57,7 @@ export default function Render3dPlot({
             mode: "text+markers",
             text: data.map((row) => row[fileMetadata.pointNames]),
             textfont: {
-              size: 20,
+              size: 12,
             },
             type: "scatter3d",
             name: key,
