@@ -31,6 +31,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "../button";
 import { Label } from "@radix-ui/react-label";
+import { Checkbox } from "../checkbox";
 
 type SpreadsheetDialogProps = {
   file: File;
@@ -53,7 +54,8 @@ const dialogFormSchema = z.object({
   z: z.string().min(1, "Z axis selection is required"),
   height: z.number(),
   width: z.number(),
-  pointNames: z.string().min(1, "Point Names Required"),
+  pointNames: z.string(),
+  displayNamesTrue: z.boolean(),
   pointDescriptions: z.string().optional(),
   colorBy: z.string().optional(), // Make 'color by' optional
 });
@@ -83,6 +85,7 @@ const SpreadsheetDialog = ({
       height: 600,
       colorBy: "",
       pointNames: "",
+      displayNamesTrue: false,
       pointDescriptions: "",
     },
   });
@@ -95,6 +98,7 @@ const SpreadsheetDialog = ({
   }, [file]);
 
   const onSubmit = (data: DialogFormSchema) => {
+    console.log(data);
     setFileMetadata(data);
     setIsOpen(false);
   };
@@ -137,7 +141,6 @@ const SpreadsheetDialog = ({
                     control={control}
                     render={({ field }) => {
                       // field.ref = null;
-                      console.log(field);
                       return (
                         <>
                           <Input
@@ -165,7 +168,6 @@ const SpreadsheetDialog = ({
                     name="height"
                     control={control}
                     render={({ field }) => {
-                      console.log(field);
                       // field.ref = null;
                       return (
                         <Input
@@ -232,41 +234,67 @@ const SpreadsheetDialog = ({
                   </div>
                 ))}
               </div>
-              <div>
-                <Label htmlFor="pointNames">Point Labels</Label>
-                <Controller
-                  name="pointNames"
-                  control={control}
-                  render={({ field }) => {
-                    // field.ref = null;
-                    return (
-                      <Select {...field} onValueChange={field.onChange}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select column to name by" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectGroup>
-                            <SelectLabel>Columns</SelectLabel>
-                            {columnNames.map((name, index) => (
-                              <SelectItem key={index} value={name}>
-                                {name}
-                              </SelectItem>
-                            ))}
-                          </SelectGroup>
-                        </SelectContent>
-                        {errors && (
-                          <p className="text-red-600">
-                            {errors?.pointNames?.message && (
-                              <p className="text-red-600">
-                                {errors?.pointNames.message as string}
-                              </p>
-                            )}
-                          </p>
-                        )}
-                      </Select>
-                    );
-                  }}
-                />
+              <div className="flex md:flex-row flex-col">
+                <div className="flex flex-col flex-1">
+                  <Label htmlFor="pointNames">Point Labels</Label>
+                  <Controller
+                    name="pointNames"
+                    control={control}
+                    render={({ field }) => {
+                      // field.ref = null;
+                      return (
+                        <Select {...field} onValueChange={field.onChange}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select column to name by" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectGroup>
+                              <SelectLabel>Columns</SelectLabel>
+                              {columnNames.map((name, index) => (
+                                <SelectItem key={index} value={name}>
+                                  {name}
+                                </SelectItem>
+                              ))}
+                            </SelectGroup>
+                          </SelectContent>
+                          {errors && (
+                            <p className="text-red-600">
+                              {errors?.pointNames?.message && (
+                                <p className="text-red-600">
+                                  {errors?.pointNames.message as string}
+                                </p>
+                              )}
+                            </p>
+                          )}
+                        </Select>
+                      );
+                    }}
+                  />
+                </div>
+                <div className="flex flex-col  items-center">
+                  <Label htmlFor="displayNamesTrue" className="text-center">
+                    Display Marker Text
+                  </Label>
+                  <div className="flex items-center h-full">
+                    <Controller
+                      name="displayNamesTrue"
+                      control={control}
+                      render={({ field }) => {
+                        return (
+                          <Checkbox
+                            id="displayNamesTrue"
+                            checked={field.value} // Control the checked state
+                            onClick={(e) => {
+                              console.log("inside");
+                              return field.onChange(!field.value);
+                            }} // Update form value on change with type assertion
+                            ref={field.ref} // Optional: for react-hook-form to register and manage focus, etc.
+                          />
+                        );
+                      }}
+                    />
+                  </div>
+                </div>
               </div>
               <div>
                 <Label>Point Descriptions</Label>

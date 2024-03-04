@@ -5,7 +5,7 @@ const Plot = dynamic(() => import("react-plotly.js"), { ssr: false });
 import { DialogFormSchema } from "./ui/form/SpreadsheetDialog"; // Import your DialogFormSchema type
 import { getColorMap, parseSpreadsheet } from "@/lib/utils";
 import PlotDownloader from "./PlotDownloader";
-import { Layout, SceneAxis } from "plotly.js";
+import { Layout, SceneAxis, update } from "plotly.js";
 import { Data } from "plotly.js";
 interface SpreadsheetRow {
   [key: string]: string | number | boolean | null; // Adjust based on your actual data structure
@@ -54,7 +54,7 @@ export default function Render3dPlot({
             x: group.map((row: SpreadsheetRow) => row[fileMetadata.x]),
             y: group.map((row: SpreadsheetRow) => row[fileMetadata.y]),
             z: group.map((row: SpreadsheetRow) => row[fileMetadata.z]),
-            mode: "text+markers",
+            mode: fileMetadata.displayNamesTrue ? "text+markers" : "markers",
             text: data.map((row) => row[fileMetadata.pointNames]),
             textfont: {
               size: 12,
@@ -76,7 +76,7 @@ export default function Render3dPlot({
           x: data.map((row) => row[fileMetadata.x]),
           y: data.map((row) => row[fileMetadata.y]),
           z: data.map((row) => row[fileMetadata.z]),
-          mode: "text+markers",
+          mode: fileMetadata.displayNamesTrue ? "text+markers" : "markers",
           type: "scatter3d",
           text: data.map((row) => row[fileMetadata.pointNames]),
           marker: { size: 12, opacity: 1, color: "Greens" },
@@ -85,6 +85,8 @@ export default function Render3dPlot({
         };
         updatedPlotData.push(trace);
       }
+
+      
 
       setPlotData(updatedPlotData);
     });
@@ -100,6 +102,7 @@ export default function Render3dPlot({
       yaxis: { title: fileMetadata.y },
       zaxis: { title: fileMetadata.z },
     },
+    
     legend: {
       title: { text: fileMetadata.colorBy },
       orientation: "h",
