@@ -54,7 +54,11 @@ export default function Render3dPlot({
             x: group.map((row: SpreadsheetRow) => row[fileMetadata.x]),
             y: group.map((row: SpreadsheetRow) => row[fileMetadata.y]),
             z: group.map((row: SpreadsheetRow) => row[fileMetadata.z]),
-            mode: "markers",
+            mode: "text+markers",
+            text: data.map((row) => row[fileMetadata.pointNames]),
+            textfont: {
+              size: 20,
+            },
             type: "scatter3d",
             name: key,
             marker: {
@@ -63,7 +67,7 @@ export default function Render3dPlot({
               color: colorMap[key],
             },
             hovertext: group.map((row: SpreadsheetRow) => formatHoverText(row)),
-            hoverinfo: 'text' // Specify to use only custom hover text
+            hoverinfo: "text", // Specify to use only custom hover text
           };
           updatedPlotData.push(trace);
         });
@@ -72,11 +76,12 @@ export default function Render3dPlot({
           x: data.map((row) => row[fileMetadata.x]),
           y: data.map((row) => row[fileMetadata.y]),
           z: data.map((row) => row[fileMetadata.z]),
-          mode: "markers",
+          mode: "text+markers",
           type: "scatter3d",
+          text: data.map((row) => row[fileMetadata.pointNames]),
           marker: { size: 12, opacity: 1, color: "Greens" },
           hovertext: data.map((row) => formatHoverText(row)),
-          hoverinfo: 'text' // Specify to use only custom hover text
+          hoverinfo: "text", // Specify to use only custom hover text
         };
         updatedPlotData.push(trace);
       }
@@ -97,7 +102,7 @@ export default function Render3dPlot({
     },
     legend: {
       title: { text: fileMetadata.colorBy },
-      orientation: "v",
+      orientation: "h",
     },
   };
 
